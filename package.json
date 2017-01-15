@@ -1,0 +1,58 @@
+{
+  "name": "semantic-fauna",
+  "version": "0.0.0",
+  "description": "Bigdatr namer",
+  "main": "src/semantic-fauna/client.js",
+  "license": "MIT",
+  "author": "bigdatr",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:bigdatr/semantic-fauna.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bigdatr/semantic-fauna/issues"
+  },
+  "scripts": {
+    "build": "rm -rf ./docs/* && NODE_ENV=production webpack",
+    "build-dev": "rm -rf ./docs/* && NODE_ENV=development webpack",
+    "lint": "eslint src --ext js,jsx",
+    "lint-fix": "eslint src --ext js,jsx --fix",
+    "watch": "NODE_ENV=development webpack-dev-server --content-base docs/ --inline --hot"
+  },
+  "private": false,
+  "dependencies": {
+    "bruce": "^0.6.0",
+    "clipboard": "^1.5.16",
+    "immutable": "^3.8.1",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2"
+  },
+  "devDependencies": {
+    "autoprefixer": "^6.5.2",
+    "babel-core": "^6.18.2",
+    "babel-loader": "^6.2.7",
+    "babel-plugin-istanbul": "^3.0.0",
+    "babel-plugin-react-transform": "^2.0.2",
+    "babel-plugin-transform-class-properties": "^6.19.0",
+    "babel-plugin-transform-runtime": "^6.15.0",
+    "babel-preset-blueflag": "^0.0.1",
+    "babel-preset-es2017": "^6.16.0",
+    "babel-preset-stage-3": "^6.17.0",
+    "babel-register": "^6.18.0",
+    "css-loader": "^0.25.0",
+    "eslint": "^3.9.1",
+    "eslint-config-blueflag": "^0.4.0",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "file-loader": "^0.9.0",
+    "json-loader": "^0.5.4",
+    "node-sass": "^3.11.2",
+    "postcss": "^5.2.5",
+    "postcss-loader": "^1.1.0",
+    "raw-loader": "^0.5.1",
+    "sass-loader": "^4.0.2",
+    "static-site-generator-webpack-plugin": "^3.1.0",
+    "style-loader": "^0.13.1",
+    "webpack": "^1.13.3",
+    "webpack-dev-server": "^1.16.2"
+  }
+}
