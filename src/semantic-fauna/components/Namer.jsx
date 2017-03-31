@@ -45,7 +45,7 @@ class Namer extends React.Component {
 
     newName() {
         const animalIndex = Math.floor(animals.length * Math.random());
-        const adjectiveIndex = Math.floor(animals.length * Math.random());
+        const adjectiveIndex = Math.floor(adjectives.length * Math.random());
         window.location.hash = window.btoa(adjectiveIndex.toString()) + '|' +
                                window.btoa(animalIndex.toString());
     }
