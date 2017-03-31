@@ -10,13 +10,19 @@ const clipboards = {
     branch: null
 };
 
+
 class Namer extends React.Component {
     constructor(props) {
         super(props);
         this.handleHashChange = this.handleHashChange.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
+        this.newName = this.newName.bind(this);
         this.state = {
             showSemver: localStorage.getItem('showSemver') === 'true',
-            semver: 'Minor'
+            maxLength: parseInt(localStorage.getItem('maxLength')) || false,
+            semver: 'Minor',
+            alliterate: localStorage.getItem('alliterate') === 'true',
+            iterations: 0
         };
     }
 
@@ -25,8 +31,25 @@ class Namer extends React.Component {
         localStorage.setItem('showSemver', showSemver);
     }
 
+    toggleAlliterate(alliterate) {
+        this.setState(Object.assign({}, this.state, {alliterate}));
+        localStorage.setItem('alliterate', alliterate);
+    }
+
+    setMaxLength(length) {
+        this.setState(Object.assign({}, this.state, {maxLength: length}));
+        localStorage.setItem('maxLength', length);
+    }
+
     setSemver(level) {
         this.setState(Object.assign({}, this.state, {semver: level}));
+    }
+
+    handleKeyDown(e) {
+        if(e.keyCode === 32) {
+            e.preventDefault();
+            this.newName();
+        }
     }
 
     handleHashChange() {
@@ -43,9 +66,23 @@ class Namer extends React.Component {
         }));
     }
 
+
     newName() {
-        const animalIndex = Math.floor(animals.length * Math.random());
-        const adjectiveIndex = Math.floor(adjectives.length * Math.random());
+        let adjectiveIndex = Math.floor(adjectives.length * Math.random());
+        let animalIndex = Math.floor(animals.length * Math.random());
+        var i = 1;
+
+        while(
+            (this.state.alliterate && animals[animalIndex][0] !== adjectives[adjectiveIndex][0]) ||
+            (this.state.maxLength && (animals[animalIndex] + adjectives[adjectiveIndex]).length > this.state.maxLength)
+        ) {
+            adjectiveIndex = Math.floor(adjectives.length * Math.random());
+            animalIndex = Math.floor(animals.length * Math.random());
+            i++;
+        }
+
+        this.setState({iterations: i});
+
         window.location.hash = window.btoa(adjectiveIndex.toString()) + '|' +
                                window.btoa(animalIndex.toString());
     }
@@ -71,6 +108,7 @@ class Namer extends React.Component {
 
     componentDidMount() {
         window.addEventListener('hashchange', this.handleHashChange);
+        window.document.addEventListener('keydown', this.handleKeyDown);
         if(!window.location.hash || window.location.hash === '#') {
             this.newName();
         } else {
@@ -129,8 +167,31 @@ class Namer extends React.Component {
                     <RegenerateIcon/>
                 </div>
             </div>
-            <div className='SemverToggle'>
-                include semver level (<span onClick={()=> this.toggleSemver(true)} className={this.state.showSemver ? 'active' : ''}>Yes</span>/<span onClick={()=> this.toggleSemver(false)} className={!this.state.showSemver ? 'active' : ''}>No</span>)
+            <div className='Iterations'>
+                {this.state.iterations}
+            </div>
+            <div className='Options'>
+                <div className='Options_option'>
+                    include semver level (<span onClick={()=> this.toggleSemver(true)} className={this.state.showSemver ? 'active' : ''}>Yes</span>/<span onClick={()=> this.toggleSemver(false)} className={!this.state.showSemver ? 'active' : ''}>No</span>)
+                </div>
+                <div className='Options_option'>
+                    alliterate? (<span onClick={()=> this.toggleAlliterate(true)} className={this.state.alliterate ? 'active' : ''}>Yes</span>/<span onClick={()=> this.toggleAlliterate(false)} className={!this.state.alliterate ? 'active' : ''}>No</span>)
+                </div>
+
+                <div className='Options_option'>
+                    max length:
+                        <span onClick={()=> this.setMaxLength(6)} className={this.state.maxLength === 6 ? 'active' : ''}>6</span>
+                        <span onClick={()=> this.setMaxLength(7)} className={this.state.maxLength === 7 ? 'active' : ''}>7</span>
+                        <span onClick={()=> this.setMaxLength(8)} className={this.state.maxLength === 8 ? 'active' : ''}>8</span>
+                        <span onClick={()=> this.setMaxLength(9)} className={this.state.maxLength === 9 ? 'active' : ''}>9</span>
+                        <span onClick={()=> this.setMaxLength(10)} className={this.state.maxLength === 10 ? 'active' : ''}>10</span>
+                        <span onClick={()=> this.setMaxLength(11)} className={this.state.maxLength === 11 ? 'active' : ''}>11</span>
+                        <span onClick={()=> this.setMaxLength(12)} className={this.state.maxLength === 12 ? 'active' : ''}>12</span>
+                        <span onClick={()=> this.setMaxLength(13)} className={this.state.maxLength === 13 ? 'active' : ''}>13</span>
+                        <span onClick={()=> this.setMaxLength(14)} className={this.state.maxLength === 14 ? 'active' : ''}>14</span>
+                        <span onClick={()=> this.setMaxLength(15)} className={this.state.maxLength === 15 ? 'active' : ''}>15</span>
+                        <span onClick={()=> this.setMaxLength(false)} className={this.state.maxLength === false ? 'active' : ''}>none</span>
+                </div>
             </div>
         </div>;
     }

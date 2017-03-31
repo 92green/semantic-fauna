@@ -141,14 +141,34 @@ body, html {
     }
 }
 
-.SemverToggle {
+.Options {
+    font-family: 'Menlo', 'Monaco', monospace;
+    padding-top: 1rem;
+    color: #666;
+    bottom: 0;
+    right: 0;
+    position: fixed;
+    .active {
+        color: $primary-color;
+    }
+
+    span {
+        padding: 0 3px;
+        cursor: pointer;
+    }
+
+    @media all and (max-width: 1024px) {
+        font-size: 0.75rem;
+    }
+}
+
+.Options_option {
     font-family: 'Menlo', 'Monaco', monospace;
     color: #666;
     font-size: 0.75rem;
     padding: 15px;
-    bottom: 0;
-    right: 0;
-    position: fixed;
+    float: right;
+
     .active {
         color: $primary-color;
     }
@@ -159,6 +179,16 @@ body, html {
 
     @media all and (max-width: 640px) {
         width: 100%;
+        padding: 5px 10px;
         text-align: center;
     }
+}
+
+.Iterations {
+    position: fixed;
+    font-size: 10px;
+    font-family: 'Menlo', 'Monaco', monospace;
+    color: #ccc;
+    left: 2px;
+    bottom: 2px;
 }
