@@ -1345,5 +1345,6 @@ export default [
     'zesty',
     'zigzag',
     'fractal',
-    'xenophobic'
+    'xenophobic',
+    'fishy'
 ];
