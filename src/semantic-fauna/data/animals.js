@@ -460,5 +460,13 @@ export default [
     'fairy-penguin',
     'ringtail-possum',
     'bettong',
-    'potoroo'
+    'potoroo',
+    // Extinct animals
+    'mammoth',
+    'pterodactyl',
+    'dodo',
+    'megalodon',
+    't-rex',
+    'velociraptor'
+
 ];

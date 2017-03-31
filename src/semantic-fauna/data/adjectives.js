@@ -1343,5 +1343,6 @@ export default [
     'zany',
     'zealous',
     'zesty',
-    'zigzag'
+    'zigzag',
+    'fractal'
 ];
