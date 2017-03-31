@@ -53,7 +53,7 @@ class Namer extends React.Component {
     }
 
     handleHashChange() {
-        const hash = window.location.hash.substring(1);
+        const hash = decodeURIComponent(window.location.hash.substring(1));
         if(hash.indexOf('|') === -1) return;
         const parts = hash.split('|');
 
