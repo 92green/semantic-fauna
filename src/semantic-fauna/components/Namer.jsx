@@ -1,6 +1,7 @@
 import React from 'react';
 import animals from 'semantic-fauna/data/animals';
 import adjectives from 'semantic-fauna/data/adjectives';
+import icons from 'semantic-fauna/data/icons';
 import CopyIcon from 'semantic-fauna/components/CopyIcon';
 import RegenerateIcon from 'semantic-fauna/components/RegenerateIcon';
 import Clipboard from 'clipboard';
@@ -131,9 +132,11 @@ class Namer extends React.Component {
 
         const release = this.getReleaseBranch();
         const startledCamelCaseRelease = this.getReleaseMain();
+        const icon = icons[this.state.animal] ? icons[this.state.animal] : null;
 
         return <div className='Wrapper'>
             <div className='Container'>
+                {icon && <div className="AnimalIcon"><img src={icon.preview_url} title={icon.attribution} alt={icon.attribution}/></div>}
                 <div className='Release Release-main'>
                     {startledCamelCaseRelease}
                     <div className='Release_copy' id='release-main-copy' ref={this.bindCopyMain.bind(this)}>
