@@ -467,6 +467,7 @@ export default [
     'dodo',
     'megalodon',
     't-rex',
-    'velociraptor'
+    'velociraptor',
+    'fauna'
 
 ];
