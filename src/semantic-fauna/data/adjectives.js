@@ -1383,5 +1383,21 @@ export default [
     'turbulent',
     'turgid',
     'voracious',
-    'neurotic'
+    'neurotic',
+    'ceramic',
+    'stone',
+    'paisley',
+    'inflatable',
+    'paper',
+    'fluoro',
+    'screaming',
+    'singing',
+    'lurking',
+    'sparkly',
+    'melted',
+    'rotting',
+    'collapsed',
+    'explosive',
+    'well-dressed',
+    'indescribable'
 ];
