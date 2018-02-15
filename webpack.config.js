@@ -22,7 +22,10 @@ let paths = ['/'];
 
 const JS_LOADER = {
     test: /\.jsx?$/,
-    include: path.resolve('./src'),
+    include: [
+        path.resolve('./src'),
+        path.resolve('./node_modules/camelcase')
+    ],
     loaders: ['babel']
 };
 

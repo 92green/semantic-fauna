@@ -25,7 +25,8 @@
     "clipboard": "^1.5.16",
     "immutable": "^3.8.1",
     "react": "^15.3.2",
-    "react-dom": "^15.3.2"
+    "react-dom": "^15.3.2",
+    "wikijs": "^4.5.1"
   },
   "devDependencies": {
     "autoprefixer": "^6.5.2",

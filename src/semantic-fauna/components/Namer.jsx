@@ -5,6 +5,7 @@ import icons from 'semantic-fauna/data/icons';
 import CopyIcon from 'semantic-fauna/components/CopyIcon';
 import RegenerateIcon from 'semantic-fauna/components/RegenerateIcon';
 import Clipboard from 'clipboard';
+import wiki from 'wikijs';
 
 const clipboards = {
     main: null,
@@ -23,7 +24,10 @@ class Namer extends React.Component {
             maxLength: parseInt(localStorage.getItem('maxLength')) || false,
             semver: 'Minor',
             alliterate: localStorage.getItem('alliterate') === 'true',
-            iterations: 0
+            iterations: 0,
+            showingInfo: false,
+            loadingInfo: false,
+            info: {}
         };
     }
 
@@ -123,24 +127,75 @@ class Namer extends React.Component {
         }) + (this.state.showSemver ? ' ('+this.state.semver+')' : '');
     }
 
+    getCamelCase() {
+        return [
+            this.state.adjective.replace(/(\b|-)(\w)/g, function(match, boundary, letter){
+                return letter.toUpperCase();
+            }),
+            this.state.animal.replace(/(\b|-)(\w)/g, function(match, boundary, letter){
+                return letter.toUpperCase();
+            })
+        ];
+    }
+
     getReleaseBranch() {
         return 'release/' + this.state.adjective + '-' + this.state.animal + (this.state.showSemver ? '-'+this.state.semver.toLowerCase() : '');;
     }
 
-    render(): React.Element<any> {
-        if(!this.state.animal || !this.state.adjective) return <div></div>
+    loadInfo() {
+        this.setState({loadingInfo: true, info: {}});
+        Promise.all([
+            wiki({
+                apiUrl: 'https://en.wiktionary.org/w/api.php'
+            }).page(this.state.adjective.split('-').join(' ')).then(result => result.content()),
+            wiki().page(this.state.animal.split('-').join(' ')).then(result => {
+                return Promise.all([result.mainImage(), result.summary()])
+            })
+        ]).then(result => {
+            this.setState({
+                loadingInfo: false,
+                info: {
+                    adjective: {
+                        summary: result[0]
+                    },
+                    animal: {
+                        image: result[1][0],
+                        summary: result[1][1]
+                    }
+                }
+            });
+        }).catch((err) => {
+            this.setState({loadingInfo: false});
+        });
+    }
 
+    handleInfoClick() {
+        this.setState({showingInfo: !this.state.showingInfo});
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(this.state.showingInfo) {
+            if(!prevState.showingInfo || prevState.animal !== this.state.animal || prevState.adjective !== this.state.adjective) {
+                this.loadInfo();
+            }
+        }
+    }
+
+    picker() {
         const release = this.getReleaseBranch();
         const startledCamelCaseRelease = this.getReleaseMain();
         const icon = icons[this.state.animal] ? icons[this.state.animal] : null;
 
-        return <div className='Wrapper'>
+        return <div>
             <div className='Container'>
                 {icon && <div className="AnimalIcon"><img src={icon.preview_url} title={icon.attribution} alt={icon.attribution}/></div>}
                 <div className='Release Release-main'>
                     {startledCamelCaseRelease}
                     <div className='Release_copy' id='release-main-copy' ref={this.bindCopyMain.bind(this)}>
                         <CopyIcon/>
+                    </div>
+                    <div className='Release_info' onClick={() => this.handleInfoClick()}>
+                        i
                     </div>
                 </div>
                 <br/>
@@ -170,32 +225,94 @@ class Namer extends React.Component {
                     <RegenerateIcon/>
                 </div>
             </div>
+
             <div className='Iterations'>
                 {this.state.iterations}
             </div>
             <div className='Options'>
                 <div className='Options_option'>
-                    include semver level (<span onClick={()=> this.toggleSemver(true)} className={this.state.showSemver ? 'active' : ''}>Yes</span>/<span onClick={()=> this.toggleSemver(false)} className={!this.state.showSemver ? 'active' : ''}>No</span>)
+                    include semver level (<span onClick={() => this.toggleSemver(true)} className={this.state.showSemver ? 'active' : ''}>Yes</span>/<span onClick={() => this.toggleSemver(false)} className={!this.state.showSemver ? 'active' : ''}>No</span>)
                 </div>
                 <div className='Options_option'>
-                    alliterate? (<span onClick={()=> this.toggleAlliterate(true)} className={this.state.alliterate ? 'active' : ''}>Yes</span>/<span onClick={()=> this.toggleAlliterate(false)} className={!this.state.alliterate ? 'active' : ''}>No</span>)
+                    alliterate? (<span onClick={() => this.toggleAlliterate(true)} className={this.state.alliterate ? 'active' : ''}>Yes</span>/<span onClick={() => this.toggleAlliterate(false)} className={!this.state.alliterate ? 'active' : ''}>No</span>)
                 </div>
 
                 <div className='Options_option'>
                     max length:
-                        <span onClick={()=> this.setMaxLength(6)} className={this.state.maxLength === 6 ? 'active' : ''}>6</span>
-                        <span onClick={()=> this.setMaxLength(7)} className={this.state.maxLength === 7 ? 'active' : ''}>7</span>
-                        <span onClick={()=> this.setMaxLength(8)} className={this.state.maxLength === 8 ? 'active' : ''}>8</span>
-                        <span onClick={()=> this.setMaxLength(9)} className={this.state.maxLength === 9 ? 'active' : ''}>9</span>
-                        <span onClick={()=> this.setMaxLength(10)} className={this.state.maxLength === 10 ? 'active' : ''}>10</span>
-                        <span onClick={()=> this.setMaxLength(11)} className={this.state.maxLength === 11 ? 'active' : ''}>11</span>
-                        <span onClick={()=> this.setMaxLength(12)} className={this.state.maxLength === 12 ? 'active' : ''}>12</span>
-                        <span onClick={()=> this.setMaxLength(13)} className={this.state.maxLength === 13 ? 'active' : ''}>13</span>
-                        <span onClick={()=> this.setMaxLength(14)} className={this.state.maxLength === 14 ? 'active' : ''}>14</span>
-                        <span onClick={()=> this.setMaxLength(15)} className={this.state.maxLength === 15 ? 'active' : ''}>15</span>
-                        <span onClick={()=> this.setMaxLength(false)} className={this.state.maxLength === false ? 'active' : ''}>none</span>
+                        <span onClick={() => this.setMaxLength(6)} className={this.state.maxLength === 6 ? 'active' : ''}>6</span>
+                        <span onClick={() => this.setMaxLength(7)} className={this.state.maxLength === 7 ? 'active' : ''}>7</span>
+                        <span onClick={() => this.setMaxLength(8)} className={this.state.maxLength === 8 ? 'active' : ''}>8</span>
+                        <span onClick={() => this.setMaxLength(9)} className={this.state.maxLength === 9 ? 'active' : ''}>9</span>
+                        <span onClick={() => this.setMaxLength(10)} className={this.state.maxLength === 10 ? 'active' : ''}>10</span>
+                        <span onClick={() => this.setMaxLength(11)} className={this.state.maxLength === 11 ? 'active' : ''}>11</span>
+                        <span onClick={() => this.setMaxLength(12)} className={this.state.maxLength === 12 ? 'active' : ''}>12</span>
+                        <span onClick={() => this.setMaxLength(13)} className={this.state.maxLength === 13 ? 'active' : ''}>13</span>
+                        <span onClick={() => this.setMaxLength(14)} className={this.state.maxLength === 14 ? 'active' : ''}>14</span>
+                        <span onClick={() => this.setMaxLength(15)} className={this.state.maxLength === 15 ? 'active' : ''}>15</span>
+                        <span onClick={() => this.setMaxLength(false)} className={this.state.maxLength === false ? 'active' : ''}>none</span>
                 </div>
             </div>
+        </div>;
+    }
+
+    defintions() {
+        const [animal, adjective] = this.getCamelCase();
+
+        if(!this.state.loadingInfo && (!this.state.info.adjective || !this.state.info.animal)) {
+            return <div className="Defintions">
+                <div className="Defintions_header">
+                    <div className="Definitions_back" onClick={() => this.handleInfoClick()}>Back</div>
+                    <div className="Definitions_headerLeft">{animal}</div>
+                    <div className="Definitions_headerRight">{adjective}</div>
+
+                </div>
+                <div className="Defintions_left">
+                    No info for this item
+                </div>
+                <div className="Defintions_right">
+                    No info for this item
+                </div>
+            </div>;
+        }
+
+        return <div className="Defintions">
+            <div className="Defintions_header">
+                <div className="Definitions_back" onClick={() => this.handleInfoClick()}>Back</div>
+                <div className="Definitions_headerLeft">{animal}</div>
+                <div className="Definitions_headerRight">{adjective}</div>
+
+            </div>
+            <div className="Defintions_left">
+                {
+                    this.state.loadingInfo
+                        ? <div>Loading...</div>
+                        : <div>{this.state.info.adjective.summary.split('\n').map((ii, index) => <p key={index}>{ii}</p>)}</div>
+                }
+            </div>
+            <div className="Defintions_right">
+                {
+                    this.state.loadingInfo
+                        ? <div>Loading...</div>
+                        : <div>
+
+                            <img src={this.state.info.animal.image} alt=""/>
+                            {this.state.info.animal.summary.split('\n').map((ii, index) => <p key={index}>{ii}</p>)}
+                        </div>
+                }
+            </div>
+        </div>;
+    }
+
+    render(): React.Element<any> {
+        if(!this.state.animal || !this.state.adjective) return <div></div>
+
+
+        const content = !this.state.showingInfo
+            ? this.picker()
+            : this.defintions();
+
+        return <div className='Wrapper'>
+            {content}
         </div>;
     }
 }
