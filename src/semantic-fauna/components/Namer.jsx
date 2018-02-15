@@ -148,7 +148,9 @@ class Namer extends React.Component {
             wiki({
                 apiUrl: 'https://en.wiktionary.org/w/api.php'
             }).page(this.state.adjective.split('-').join(' ')).then(result => result.content()),
-            wiki().page(this.state.animal.split('-').join(' ')).then(result => {
+            wiki({
+                apiUrl: 'https://en.wikipedia.org/w/api.php'
+            }).page(this.state.animal.split('-').join(' ')).then(result => {
                 return Promise.all([result.mainImage(), result.summary()])
             })
         ]).then(result => {
