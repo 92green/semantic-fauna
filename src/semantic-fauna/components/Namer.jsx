@@ -12,7 +12,8 @@ const clipboards = {
     branch: null
 };
 
-
+const regexA = new RegExp('^(.+?)([aeiouAEIOU].*)');
+const regexB = new RegExp('^(sh|st|pr|fr|.)(.*)');
 class Namer extends React.Component {
     constructor(props) {
         super(props);
@@ -24,6 +25,7 @@ class Namer extends React.Component {
             maxLength: parseInt(localStorage.getItem('maxLength')) || false,
             semver: 'Minor',
             alliterate: localStorage.getItem('alliterate') === 'true',
+            spoonerise: localStorage.getItem('spoonerise') === 'true',
             iterations: 0,
             showingInfo: false,
             loadingInfo: false,
@@ -39,6 +41,11 @@ class Namer extends React.Component {
     toggleAlliterate(alliterate) {
         this.setState(Object.assign({}, this.state, {alliterate}));
         localStorage.setItem('alliterate', alliterate);
+    }
+
+    toggleSpoonerise(spoonerise) {
+        this.setState(Object.assign({}, this.state, {spoonerise}));
+        localStorage.setItem('spoonerise', spoonerise);
     }
 
     setMaxLength(length) {
@@ -121,8 +128,25 @@ class Namer extends React.Component {
         }
     }
 
+    spoonerise(adjective, animal) {
+        const words = adjective.split('-').concat(animal.split('-'));
+        return words
+            .map((ww, index, words) => {
+                const match = ww.match(regexA) || ww.match(regexB);
+                const [word, start, end] = match;
+                return {start, end};
+            })
+            .map((ww, index, iterable) => {
+                const next = iterable[index + 1] || iterable[0];
+                return next.start + ww.end;
+            });
+    }
+
     getReleaseMain() {
-        return (this.state.adjective + '-' + this.state.animal).replace(/(\b|-)(\w)/g, function(match, boundary, letter){
+        const phrase = this.state.spoonerise
+            ? this.spoonerise(this.state.adjective, this.state.animal).join('-')
+            : this.state.adjective + '-' + this.state.animal;
+        return phrase.replace(/(\b|-)(\w)/g, function(match, boundary, letter){
             return letter.toUpperCase();
         }) + (this.state.showSemver ? ' ('+this.state.semver+')' : '');
     }
@@ -139,7 +163,10 @@ class Namer extends React.Component {
     }
 
     getReleaseBranch() {
-        return 'release/' + this.state.adjective + '-' + this.state.animal + (this.state.showSemver ? '-'+this.state.semver.toLowerCase() : '');;
+        const phrase = this.state.spoonerise
+            ? this.spoonerise(this.state.adjective, this.state.animal).join('-')
+            : this.state.adjective + '-' + this.state.animal;
+        return 'release/' + phrase + (this.state.showSemver ? '-'+this.state.semver.toLowerCase() : '');;
     }
 
     loadInfo() {
@@ -237,6 +264,9 @@ class Namer extends React.Component {
                 </div>
                 <div className='Options_option'>
                     alliterate? (<span onClick={() => this.toggleAlliterate(true)} className={this.state.alliterate ? 'active' : ''}>Yes</span>/<span onClick={() => this.toggleAlliterate(false)} className={!this.state.alliterate ? 'active' : ''}>No</span>)
+                </div>
+                <div className='Options_option'>
+                    spoonerise? (<span onClick={() => this.toggleSpoonerise(true)} className={this.state.spoonerise ? 'active' : ''}>Yes</span>/<span onClick={() => this.toggleSpoonerise(false)} className={!this.state.spoonerise ? 'active' : ''}>No</span>)
                 </div>
 
                 <div className='Options_option'>
